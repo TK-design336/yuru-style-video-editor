@@ -1,0 +1,9 @@
+# Whisper + NeMo 話者分離（MahmoudAshraf97/whisper-diarization 互換）
+# Python 3.10〜3.13。constraints.txt と併用して pip install してください。
+cython
+nltk
+faster-whisper>=1.1.0
+nemo_toolkit[asr]>=2.5.0
+git+https://github.com/MahmoudAshraf97/demucs.git
+git+https://github.com/oliverguhr/deepmultilingualpunctuation.git
+git+https://github.com/MahmoudAshraf97/ctc-forced-aligner.git

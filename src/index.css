@@ -1,0 +1,253 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --glass-bg: rgba(18, 18, 22, 0.72);
+    --glass-bg-raised: rgba(26, 26, 32, 0.78);
+    --glass-bg-deep: rgba(8, 8, 12, 0.85);
+    --glass-veil: rgba(25, 25, 30, 0.35);
+    --glass-veil-native: rgba(10, 10, 14, 0.14);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-border-strong: rgba(255, 255, 255, 0.18);
+    --accent: #ff6b35;
+    --accent-soft: #ffb088;
+    --accent-glow: rgba(255, 107, 53, 0.35);
+    --text-primary: rgba(255, 255, 255, 0.95);
+    --text-secondary: rgba(255, 255, 255, 0.65);
+    --text-muted: rgba(255, 255, 255, 0.45);
+    --blur-glass: 40px;
+    --blur-glass-panel: 24px;
+    --radius-glass: 14px;
+    --radius-glass-lg: 18px;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+  }
+
+  /*
+   * 背景の柄は OS のデスクトップ壁紙（Tauri 透明ウィンドウ経由）。
+   * ぼかしは CSS backdrop-filter ではなく Tauri の windowEffects（Acrylic 等）が担当する。
+   * Windows では backdrop-filter は DOM 内しかぼかせず、背後のウィンドウ・壁紙はぼけない。
+   */
+  html {
+    background: #0a0a0c;
+  }
+
+  body {
+    @apply font-sans antialiased text-white;
+    background: transparent;
+    color: var(--text-primary);
+  }
+
+  #root {
+    background: transparent;
+  }
+
+  /* Tauri 透明ウィンドウ: デスクトップ壁紙がそのまま見える */
+  html.tauri-transparent {
+    background: transparent;
+  }
+
+  ::selection {
+    background: rgba(255, 107, 53, 0.35);
+    color: #fff;
+  }
+}
+
+@layer components {
+  /*
+   * 全画面ティント。Tauri ではネイティブ Acrylic が背後をぼかすため、
+   * ここは readability 用の薄いオーバーレイのみ（backdrop-filter は使わない）。
+   */
+  .app-shell {
+    @apply relative isolate min-h-screen;
+  }
+
+  .app-shell::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: var(--glass-veil);
+    transform: translateZ(0);
+  }
+
+  html.tauri-transparent .app-shell::before {
+    background: var(--glass-veil-native);
+  }
+
+  .app-shell > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .glass-main {
+    background: rgba(14, 14, 18, 0.42);
+    -webkit-backdrop-filter: blur(16px) saturate(1.08);
+    backdrop-filter: blur(16px) saturate(1.08);
+  }
+
+  .glass-surface {
+    -webkit-backdrop-filter: blur(var(--blur-glass-panel)) saturate(1.1);
+    backdrop-filter: blur(var(--blur-glass-panel)) saturate(1.1);
+  }
+
+  .glass-panel {
+    @apply glass-surface rounded-glass border border-glass-border bg-glass shadow-glass-sm;
+  }
+
+  .glass-panel-raised {
+    @apply glass-surface rounded-glass border border-glass-border bg-glass-raised shadow-glass-sm;
+  }
+
+  .glass-panel-deep {
+    @apply glass-surface rounded-glass border border-glass-border bg-glass-deep shadow-glass;
+    -webkit-backdrop-filter: blur(32px) saturate(1.1);
+    backdrop-filter: blur(32px) saturate(1.1);
+  }
+
+  .glass-header {
+    @apply glass-surface border-b border-glass-border bg-glass/90;
+    -webkit-backdrop-filter: blur(var(--blur-glass-panel)) saturate(1.1);
+    backdrop-filter: blur(var(--blur-glass-panel)) saturate(1.1);
+  }
+
+  .glass-sidebar {
+    @apply glass-surface border-l border-glass-border bg-glass/75;
+    -webkit-backdrop-filter: blur(var(--blur-glass-panel)) saturate(1.1);
+    backdrop-filter: blur(var(--blur-glass-panel)) saturate(1.1);
+  }
+
+  .glass-divider {
+    @apply border-glass-border;
+  }
+
+  .glass-input {
+    @apply glass-surface w-full rounded-glass border border-glass-border bg-glass-deep/90 px-3 py-2 text-sm text-white placeholder:text-white/35 focus:border-accent/50 focus:outline-none focus:ring-1 focus:ring-accent/25;
+  }
+
+  .glass-btn-primary {
+    @apply inline-flex items-center justify-center rounded-glass bg-accent px-4 py-2 text-sm font-medium text-white shadow-accent-glow-sm transition hover:bg-accent-muted disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none;
+  }
+
+  .glass-btn-secondary {
+    @apply glass-surface inline-flex items-center justify-center rounded-glass border border-glass-border-strong bg-glass-raised/90 px-4 py-2 text-sm font-medium text-white/90 transition hover:bg-glass-raised disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .glass-btn-ghost {
+    @apply glass-surface inline-flex items-center justify-center rounded-glass border border-glass-border bg-glass/50 px-3 py-1.5 text-sm text-white/70 transition hover:border-glass-border-strong hover:bg-glass-raised/60 disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .glass-btn-icon {
+    @apply inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-glass-border bg-glass-raised/60 p-0 text-sm text-white/70 backdrop-blur-md transition hover:border-glass-border-strong hover:bg-glass-raised hover:text-white;
+  }
+
+  .glass-segment {
+    @apply glass-surface flex rounded-glass-lg border border-glass-border bg-glass-deep/75 p-0.5;
+  }
+
+  .glass-segment-item {
+    @apply min-w-0 flex-1 rounded-glass px-3 py-2 text-center text-sm text-white/50 transition;
+  }
+
+  .glass-segment-item-active {
+    @apply bg-glass-raised text-white shadow-glass-sm;
+  }
+
+  .glass-segment-item-selected {
+    @apply glass-segment-item-active bg-accent/20 text-accent-soft;
+  }
+
+  .glass-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .glass-badge-accent {
+    @apply glass-badge bg-accent/20 text-accent-soft;
+  }
+
+  .glass-preview {
+    @apply glass-surface flex items-center justify-center overflow-hidden rounded-glass-lg border border-glass-border bg-glass-deep;
+    -webkit-backdrop-filter: blur(20px) saturate(1.08);
+    backdrop-filter: blur(20px) saturate(1.08);
+  }
+
+  .glass-toast {
+    @apply glass-surface rounded-glass border shadow-glass;
+    -webkit-backdrop-filter: blur(32px) saturate(1.1);
+    backdrop-filter: blur(32px) saturate(1.1);
+  }
+
+  .glass-card-selected {
+    @apply border-accent/60 shadow-accent-glow;
+    box-shadow:
+      0 0 20px var(--accent-glow),
+      inset 0 0 24px rgba(255, 107, 53, 0.08);
+  }
+
+  .glass-progress-track {
+    @apply h-2 overflow-hidden rounded-full bg-white/10;
+  }
+
+  .glass-progress-fill {
+    @apply h-full rounded-full bg-accent transition-[width] duration-300 shadow-accent-glow-sm;
+  }
+
+  .text-label {
+    @apply text-xs font-medium uppercase tracking-wider text-accent;
+  }
+
+  .text-meta {
+    @apply font-mono text-xs text-white/45;
+  }
+
+  .phase-sidebar {
+    @apply glass-surface z-10 flex w-[4.75rem] shrink-0 flex-col border-r border-glass-border bg-glass-deep/90;
+    -webkit-backdrop-filter: blur(var(--blur-glass-panel)) saturate(1.1);
+    backdrop-filter: blur(var(--blur-glass-panel)) saturate(1.1);
+  }
+
+  .phase-sidebar-main {
+    @apply flex flex-1 flex-col items-center gap-1 px-1.5 py-3;
+  }
+
+  .phase-sidebar-footer {
+    @apply flex shrink-0 flex-col items-center border-t border-glass-border px-1.5 py-3;
+  }
+
+  .phase-nav-btn {
+    @apply flex w-full flex-col items-center gap-0.5 rounded-glass px-0.5 py-1.5 text-[10px] leading-tight text-white/45 transition;
+  }
+
+  .phase-nav-step {
+    @apply text-[9px] font-medium leading-none text-white/35;
+  }
+
+  .phase-nav-btn svg {
+    @apply size-5 shrink-0;
+  }
+
+  .phase-nav-btn:hover:not(:disabled) {
+    @apply bg-white/5 text-white/75;
+  }
+
+  .phase-nav-btn-active {
+    @apply bg-accent/15 text-accent-soft;
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+
+  .phase-nav-btn-disabled {
+    @apply cursor-not-allowed opacity-30;
+  }
+
+  .phase-nav-label {
+    @apply max-w-full truncate text-center;
+  }
+}
